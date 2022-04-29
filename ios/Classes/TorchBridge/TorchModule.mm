@@ -64,7 +64,8 @@
         if(!floatBuffer){
             return nil;
         }
-        
+
+        /*
         int prod = 1;
         for(int i = 0; i < outputTensor.sizes().size(); i++) {
             prod *= outputTensor.sizes().data()[i];  
@@ -73,6 +74,12 @@
         NSMutableArray<NSNumber*>* results = [[NSMutableArray<NSNumber*> alloc] init];
         for (int i = 0; i < prod; i++) {
             [results addObject: @(floatBuffer[i])];   
+        }
+        */
+
+        NSMutableArray* results = [[NSMutableArray alloc] init];
+        for (int i = 0; i < width * height; i++) {
+            [results addObject:@(floatBuffer[i])];
         }
         
         return [results copy];
