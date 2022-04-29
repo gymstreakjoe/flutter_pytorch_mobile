@@ -73,6 +73,25 @@ class Model {
     return prediction;
   }
 
+  ///predicts image with bytes but returns the raw net output
+  Future<List?> getImageDataPredictionList(
+      Uint8List imageData, int width, int height,
+      {List<double> mean = TORCHVISION_NORM_MEAN_RGB,
+      List<double> std = TORCHVISION_NORM_STD_RGB}) async {
+    // Assert mean std
+    assert(mean.length == 3, "Mean should have size of 3");
+    assert(std.length == 3, "STD should have size of 3");
+    final List? prediction = await _channel.invokeListMethod("predictImage", {
+      "index": _index,
+      "image": imageData,
+      "width": width,
+      "height": height,
+      "mean": mean,
+      "std": std
+    });
+    return prediction;
+  }
+
   //get labels in csv format
   Future<List<String>> _getLabels(String labelPath) async {
     String labelsData = await rootBundle.loadString(labelPath);
