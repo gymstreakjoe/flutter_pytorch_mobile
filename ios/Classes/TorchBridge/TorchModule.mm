@@ -52,7 +52,7 @@
     return nil;
 }
 
-- (unsigned char*)predictU2NetImage:(void*)imageBuffer withWidth:(int)width andHeight:(int)height {
+- (NSArray<NSNumber*>*)predictU2NetImage:(void*)imageBuffer withWidth:(int)width andHeight:(int)height {
     try {
         at::Tensor tensor = torch::from_blob(imageBuffer, {1, 3, height, width}, at::kFloat);
         torch::autograd::AutoGradMode guard(false);
@@ -65,7 +65,7 @@
             return nil;
         }
         
-        
+        /*
         int prod = 1;
         for(int i = 0; i < outputTensor.sizes().size(); i++) {
             prod *= outputTensor.sizes().data()[i];  
@@ -74,32 +74,14 @@
         NSMutableArray<NSNumber*>* results = [[NSMutableArray<NSNumber*> alloc] init];
         for (int i = 0; i < prod; i++) {
             [results addObject: @(floatBuffer[i])];   
-        }
+        }*/
 
-
-        NSMutableData* data = [NSMutableData dataWithLength:sizeof(unsigned char) * 3 * width * height];
-        unsigned char* buffer = (unsigned char*)[data mutableBytes];
-        // go through each element in the output of size [WIDTH, HEIGHT] and
-        // set different color for different classnum
-        for (int j = 0; j < width; j++) {
-            for (int k = 0; k < height; k++) {
-                int maxj = 0, maxk = 0;
-                float maxnum = -100000.0;
-                
-                    if ([results[(width * height) + j * width + k] floatValue] > maxnum) {
-                        maxnum = [results[(width * height) + j * width + k] floatValue];
-                         maxj = j; maxk = k;
-                    }
-                
-                int n = 3 * (maxj * width + maxk);
-                // color coding for person (red), dog (green), sheep (blue)
-                // black color for background and other classes
-                buffer[n] = 255; buffer[n+1] = 255; buffer[n+2] = 255;
-            }
+        NSMutableArray* results = [[NSMutableArray alloc] init];
+        for (int i = 0; i < width * height; i++) {
+            [results addObject:@(floatBuffer[i])];
         }
         
-        return buffer;
-        //return [results copy];
+        return [results copy];
     } catch (const std::exception& e) {
         NSLog(@"%s", e.what());
     }

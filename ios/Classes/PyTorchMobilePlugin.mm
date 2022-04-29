@@ -134,7 +134,7 @@ NSMutableArray *modules = [[NSMutableArray alloc] init];
                 NSLog(@"PyTorchMobile: error reading image!\n%s", e.what());
             }
             try {
-               unsigned char* output  = [imageModule predictU2NetImage:input withWidth:width andHeight: height];
+                NSArray<NSNumber*>* output  = [imageModule predictU2NetImage:input withWidth:width andHeight: height];
                 
                 result(output);
             } catch (const std::exception& e) {
