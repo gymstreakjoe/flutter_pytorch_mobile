@@ -16,7 +16,7 @@ NSMutableArray *modules = [[NSMutableArray alloc] init];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSArray *methods = @[@"loadModel", @"predict", @"predictImage"];
+    NSArray *methods = @[@"loadModel", @"predict", @"predictImage",@"predictU2NetImage"];
     int method = (int)[methods indexOfObject:call.method];
     switch(method) {
         case 0:

@@ -52,6 +52,36 @@
     return nil;
 }
 
+- (NSArray<NSNumber*>*)predictU2NetImage:(void*)imageBuffer withWidth:(int)width andHeight:(int)height {
+    try {
+        at::Tensor tensor = torch::from_blob(imageBuffer, {1, 3, height, width}, at::kFloat);
+        torch::autograd::AutoGradMode guard(false);
+        at::AutoNonVariableTypeMode non_var_type_mode(true);
+        
+        at::Tensor outputTensor = _module.forward({tensor}).toTuple()->elements()[0].toTensor();
+        
+        float *floatBuffer = outputTensor.data_ptr<float>();
+        if(!floatBuffer){
+            return nil;
+        }
+        
+        int prod = 1;
+        for(int i = 0; i < outputTensor.sizes().size(); i++) {
+            prod *= outputTensor.sizes().data()[i];  
+        }
+        
+        NSMutableArray<NSNumber*>* results = [[NSMutableArray<NSNumber*> alloc] init];
+        for (int i = 0; i < prod; i++) {
+            [results addObject: @(floatBuffer[i])];   
+        }
+        
+        return [results copy];
+    } catch (const std::exception& e) {
+        NSLog(@"%s", e.what());
+    }
+    return nil;
+}
+
 - (NSArray<NSNumber*>*)predict:(void*)data withShape:(NSArray<NSNumber*>*)shape andDtype:(NSString*)dtype {
     std::vector<int64_t> shapeVec;    
     for(int i = 0; i < [shape count]; i++){
@@ -82,6 +112,9 @@
     
     return [results copy];
 }
+
+
+
 
 - (at::ScalarType)_convert:(NSString*)dtype {
     NSArray *dtypes = @[@"float32", @"float64", @"int32", @"int64", @"int8", @"uint8"];
