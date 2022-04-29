@@ -52,7 +52,7 @@
     return nil;
 }
 
-- (NSArray<NSNumber*>*)predictU2NetImage:(void*)imageBuffer withWidth:(int)width andHeight:(int)height {
+- (unsigned char*)predictU2NetImage:(void*)imageBuffer withWidth:(int)width andHeight:(int)height {
     try {
         at::Tensor tensor = torch::from_blob(imageBuffer, {1, 3, height, width}, at::kFloat);
         torch::autograd::AutoGradMode guard(false);
